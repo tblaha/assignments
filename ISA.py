@@ -307,8 +307,6 @@ for alt in isa['h']:
         isa['p'].append(pressure_density(alt,'p'))
         isa['rho'].append(pressure_density(alt,'rho'))
 
-print isa
-
 while True:
     print "\n\n*** International Standard Atmosphere (ISA) calculations (and more) ***\n"
 
