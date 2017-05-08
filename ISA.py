@@ -1,7 +1,7 @@
 import numpy as np
 import sys
 
-cnts={'R':287.05,'g':9.81,'ft-m':0.3048,'kts-m/s':0.51444,'Re':6371000.,'gamma':1.4}
+cnts={'R':287.05,'g':9.81665,'ft-m':0.3048,'kts-m/s':0.51444,'Re':6371000.,'gamma':1.4}
 isa={'name':['Troposhere','Tropopause','Stratosphere 1','Stratosphere 2','Stratopause','Mesosphere 1','Mesosphere 2', 'Mesopause'],# From table
      'h':[0.,11000.,20000.,32000.,47000.,51000.,71000.,84852.],# From table
      'a':[-0.0065,0,0.001,0.0028,0,-0.0028,-0.002,None], # From table
@@ -91,7 +91,7 @@ def make_menu(id):
 def temperature(alt):
     i=0
     while alt>isa['h'][i+1]: ## Get the layer we're in
-        i=i+1
+        i+=1
     return (alt-isa['h'][i])*isa['a'][i]+isa['T'][i] # compute temp by multiplying difference in _alt_ and _base height_ by _lapse rate_ and adding to _base temp_
 
 ### Density and Pressure computation ################################################################################
@@ -307,7 +307,6 @@ for alt in isa['h']:
         isa['p'].append(pressure_density(alt,'p'))
         isa['rho'].append(pressure_density(alt,'rho'))
 
-print isa
 
 while True:
     print "\n\n*** International Standard Atmosphere (ISA) calculations (and more) ***\n"
