@@ -4,7 +4,7 @@
 
 from math import *
 
-n=989
+n=600851475143
 primes=[2]
 i=0
 

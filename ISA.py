@@ -306,11 +306,6 @@ for alt in isa['h']:
         isa['T'].append(temperature(alt)) ## note that this works because the logic is such that the base alt of a layer is taken care of by the previous layer. If the sea level values are set, there is always all values of the previous layer to compute the next.
         isa['p'].append(pressure_density(alt,'p'))
         isa['rho'].append(pressure_density(alt,'rho'))
-
-<<<<<<< HEAD
-
-=======
->>>>>>> fcb136eff480e68311ce231fd872f2386cc9e038
 while True:
     print "\n\n*** International Standard Atmosphere (ISA) calculations (and more) ***\n"
 

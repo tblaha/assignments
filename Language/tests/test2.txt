@@ -1,0 +1,49 @@
+ESPACE - L'univers est rempli de phénomènes improbables, exotiques, mais que les astrophysiciens finissent souvent par comprendre. Actuellement, l'un des plus mystérieux et encore inexpliqué s'appelle FRB, pour "sursaut radio rapide".
+
+En 2007, les scientifiques ont repéré pour la première fois dans l'espace un de ces flashs lumineux très puissants, mais également très courts. Depuis, une vingtaine de ces signaux, qui ne durent que 5 millisecondes, ont été repérés.
+
+Si les scientifiques ont réussi en début d'année à trouver l'origine de l'un de ceux-ci, une galaxie naine, la cause de ces FRB est toujours inexpliquée. Et presque toujours dans ce genre de situation, la question d'une origine artificielle, extraterrestre, finit par être posée.
+
+Pour ces fameux sursauts radio, deux physiciens d'Harvard se sont demandés si, théoriquement, les FRB pourraient être l'oeuvre de civilisations extraterrestres très avancées, rapporte le Washington Post ce vendredi 10 mars. L'étude a été acceptée pour publication dans la revue Astrophysical Journal Letters.
+
+Des phares... ou plutôt des propulseurs laser de vaisseaux
+
+D'emblée, les auteurs rappellent que plusieurs hypothèses plus naturelles, et donc plus probables, ont été imaginées par leurs collègues pour trouver une origine aux FRB. Etoiles à neutrons supermassives, rayons gamma et autres éruptions stellaires sont souvent citées comme des explications potentielles. Mais sans preuve véritable, par simple déduction théorique.
+
+Mais les deux chercheurs ont retourné le problème. Imaginons que ces signaux soient artificiels: comment une civilisation extraterrestre pourrait-elle en être à l'origine? Les auteurs se sont donc livrés à plusieurs calculs. Résultat: ces signaux pourraient servir de phares interstellaires à une civilisation avancée.
+
+Mais au vu de l'énergie colossale nécessaire pour un tel projet, le jeu ne semble pas en valoir la chandelle. Ils ont donc imaginé une autre solution: et si les FRB n'étaient qu'un moyen de propulsion pour envoyer de gigantesques vaisseaux spatiaux à travers la galaxie?
+
+La voile solaire décidément à la mode
+
+Les chercheurs ont essayé de voir comment une civilisation extraterrestre pourrait utiliser une technologie qui fait de plus en plus parler sur Terre: la voile solaire. Le concept est assez simple. Un vaisseau spatial est équipé d'une grande voile, qui a la particularité de ne pas capter le vent, mais les ondes électromagnétiques. Par exemple, une source lumineuse, comme un laser.
+
+Quand les photons touchent la voile, ils la propulsent vers l'avant, comme pour un bateau. L'intérêt de ce type de propulsion, c'est qu'il n'y a pas besoin d'embarquer de carburant: c'est un laser, dirigé depuis un point fixe, qui fait avancer le vaisseau.
+
+Du coup, il est possible de faire accélérer un vaisseau petit à petit, mais de manière presque infinie, l'amenant à des vitesses énormes: près d'un quart de la vitesse de la lumière, quand notre sonde la plus rapide se traîne à 0,01%. Ce genre de technologie est actuellement à l'étude et pourrait théoriquement propulser un vaisseau sur Mars en trois jours, ou sur Alpha du Centaure, la voisine du soleil, en une vingtaine d'années.
+
+Un vaisseau d'un million de tonnes
+
+Sauf que nos expérimentations se limitent à des vaisseaux minuscules, de quelques grammes. Car plus la masse est importante, plus le rayon laser doit être puissant. Sans compter qu'à une telle vitesse, un vaisseau massif serait extrêmement fragile: un simple grain de poussière pourrait le détruire. Mais c'est un autre problème, qui n'est pas traité dans cette étude.
+
+Pour ce qui est du rayon laser, les auteurs ont réalisé quelques calculs. Au vu de la puissance des FRB, avec une voile solaire suffisamment grande, il serait possible de propulser à des vitesses énormes un vaisseau d'un million de tonnes (soit 20 fois plus que le plus gros des bateaux existants). Et il se trouve que les fameux signaux radios ont la même fréquence que celle nécessaire pour ces voiles solaires.
+
+Pour créer un faisceau lumineux suffisamment puissant pour propulser un tel vaisseau sur des milliers de milliards de kilomètres, il faudrait un émetteur surpuissant. Les auteurs ont encore une fois sorti leur calculatrice et ont réfléchi au problème à la fois en termes de contraintes énergétiques et d'ingénierie. "Les deux approches ont donné un résultat étonnamment similaire", notent-ils.
+
+Une planète géante comme émetteur
+
+Ces calculs ont permis aux chercheurs d'imaginer la taille de l'émetteur de ces gigantesques lasers. "Remarquable coïncidence", notent encore les auteurs: celui-ci devrait faire environ deux fois le diamètre de la Terre.
+
+"En d'autres termes, l'émetteur du rayon est un objet similaire à une planète", précisent-ils. Cela semble évidemment fou, un objet artificiel si gigantesque. Mais plusieurs scientifiques ont déjà imaginé des choses similaires, comme la sphère de Dyson. Ce concept théorique entourerait une étoile et permettrait de récupérer son énergie.
+
+Ici, c'est un peu la même chose. Pour fonctionner, ce gigantesque laser aurait besoin de l'énergie produite par le soleil. De même, pour éviter que toute la structure ne brûle, il faudrait énormément d'eau pour refroidir le tout.
+
+Des travaux un peu farfelus, mais...
+
+Les auteurs précisent qu'il est possible que nous ne puissions détecter que les plus puissants de ces émetteurs. Ceux servant à propulser de plus petits vaisseaux, ou sur de plus courtes distances, seraient invisibles à nos yeux s'ils proviennent d'une galaxie lointaine.
+
+Les deux physiciens évoquent également la possibilité que seule une partie de ces sursauts pourraient être d'origine extraterrestre. Ils suggèrent d'ailleurs d'observer plus particulièrement un FRB bien spécifique, nom de code 121102. Pourquoi celui-ci? Découvert en 2012, il a récemment été prouvé qu'il se répétait de manière irrégulière.
+
+Car jusqu'alors, ces sursauts radios étaient toujours uniques, provenant toujours d'une direction différente dans le ciel. En janvier, une équipe a réussi à trouver l'origine de FRB 121102: une galaxie naine située à trois milliards d'années de la Terre.
+
+Dans leur conclusion, les chercheurs concèdent volontiers qu'une origine extraterrestre à ces FRB "est plus spéculative qu'une origine astrophysique" naturelle. Pour autant, le fait de mettre ces calculs à disposition pourrait permettre, quand d'autres informations sur ces fameux sursauts radios seront connus, de rayer l'origine artificielle de la liste une bonne fois pour toute.

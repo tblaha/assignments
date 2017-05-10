@@ -28,8 +28,7 @@ def primegen(m): ## This (efficiently) generates primes up to the square root of
             primes.append(list_non_primes[i]-1)
         i += 1
 
-    print len(primes)
-    print primes[len(primes)-1]
+    print sum(primes)
     #print list_non_primes
 
 primegen(2000000)
