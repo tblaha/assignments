@@ -48,6 +48,7 @@ def plot(attributes,statspath): ## plot a stats file
     plt.title(name)                                     ## <---- NEW
     plt.savefig('{0}/{1}_stats.png'.format(statspath,name))                                     ## <---- NEW
 
+#--- append to dynamic plot for user output
 def plot_append(attributes,rows,columns,location,fig,color=None):
     name=attributes[0]
     chars=attributes[1]
@@ -61,7 +62,7 @@ def plot_append(attributes,rows,columns,location,fig,color=None):
     return fig
 
 
-#---
+#--- read attributes from an already existing language stats file ("fingerprint" file)
 def readattributes(name,statspath): ## read the stats file to an attribute list
     chars={}
     with open('{0}/{1}_stats.txt'.format(statspath,name), 'r') as myfile:
