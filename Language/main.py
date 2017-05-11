@@ -2,7 +2,7 @@ from library import *
 
 samplespath='./samples'
 statspath='./samples/stats'
-tobetested='./moretests/test2.txt'
+tobetested='./tests/test1' #w/o .txt
 
 populatestats(samplespath,statspath)
-print findlanguage(tobetested,statspath)
+findlanguage(tobetested,statspath)

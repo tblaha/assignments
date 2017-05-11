@@ -1,73 +1,108 @@
 from matplotlib import pyplot as plt
 import os
 
+##############################################################################
+# Standalone functions
+##############################################################################
+
+#--- General: get attribute of any text. ---
 def getattributes(name,path='.'): ## get all characteristic attributes of the sample text
-    with open('{0}/{1}'.format(path,name), 'r') as myfile:
-        fileasstring=myfile.read().replace('\n', ' ')
-    fileasstring=fileasstring.replace('.', ' ')
-    fileasstring=fileasstring.replace(',', ' ')
-    fileasstring=fileasstring.replace(';', ' ')
+    with open('{0}/{1}.txt'.format(path,name), 'r') as myfile:                                     ## <---- NEW
+        fileasstring=myfile.read().replace('\n', ' ')                                     ## <---- NEW
+    fileasstring=fileasstring.replace('.', ' ')                                     ## <---- NEW
+    fileasstring=fileasstring.replace(',', ' ')                                     ## <---- NEW
+    fileasstring=fileasstring.replace(':', ' ')                                     ## <---- NEW
+    fileasstring=fileasstring.replace(';', ' ')                                     ## <---- NEW
+    fileasstring=fileasstring.replace('?', ' ')                                     ## <---- NEW
+    fileasstring=fileasstring.replace('!', ' ')                                     ## <---- NEW
+    fileasstring=fileasstring.replace(chr(34), ' ')                                     ## <---- NEW
+    fileasstring=fileasstring.replace(chr(39), ' ')                                     ## <---- NEW
+    # --- word length ---
+    spaces=fileasstring.count(' ')                                     ## <---- NEW
+    ratio=float(len(fileasstring)-float(spaces))/(float(spaces)+1)
     # --- char freq ---
+    fileasstring=fileasstring.replace(' ', '')                                     ## <---- NEW
     chars={}
     length=len(fileasstring)
     for a in range(0,256): # all chars
         chars[a] = float(fileasstring.count(chr(a)))/float(length)
-    # --- word length ---
-    spaces=fileasstring.count(' ')
-    ratio=float(len(fileasstring)-float(spaces))/(float(spaces)+1)
-    return [chars,ratio,name]
+    return [name,chars,ratio]
 
-def stat(attributes,statspath): ## generate the stats file
-    chars=attributes[0]
-    ratio=attributes[1]
-    name=attributes[2]
-    with open('{0}/{1}_stats.txt'.format(statspath,name), 'w') as myfile:
-        for key in chars.keys():
-            myfile.write('{0} | {1}\n'.format(key, chars[key]))
-        myfile.write('wl | {0}\n'.format(ratio))
+#--- Make a stats file for an analysed text, ie learn a language
+def stats(attributes,statspath): ## generate the stats file
+    name=attributes[0]
+    chars=attributes[1]
+    ratio=attributes[2]
+    with open('{0}/{1}_stats.txt'.format(statspath,name), 'w') as myfile:                                     ## <---- NEW
+        for key in chars.keys():                                     ## <---- NEW
+            myfile.write('{0} | {1}\n'.format(key, chars[key]))                                     ## <---- NEW
+        myfile.write('wl | {0}\n'.format(ratio))                                     ## <---- NEW
 
-def plot(name,statspath): ## plot a stats file
-    attributes=readattributes(name,statspath)
-    chars=attributes[0]
-    ratio=attributes[1]
-    name=attributes[2]
-    plt.close()
-    plt.plot(chars.keys(),chars.values())
-    plt.title(name)
-    plt.savefig('{0}/{1}_stats.png'.format(statspath,name))
+#--- make a single png plot for a fingerprint of a leant language
+def plot(attributes,statspath): ## plot a stats file
+    name=attributes[0]
+    chars=attributes[1]
+    ratio=attributes[2]
+    plt.clf()
+    plt.plot(chars.keys(),chars.values())                                     ## <---- NEW
+    plt.title(name)                                     ## <---- NEW
+    plt.savefig('{0}/{1}_stats.png'.format(statspath,name))                                     ## <---- NEW
 
+def plot_append(attributes,rows,columns,location,fig,color=None):
+    name=attributes[0]
+    chars=attributes[1]
+    ratio=attributes[2]
+    sc = fig.add_subplot(rows,columns,location)
+    if color:
+        sc.plot(chars.keys(),chars.values(),'C1')
+    else:
+        sc.plot(chars.keys(),chars.values())
+    sc.set_title(name)
+    return fig
+
+
+#---
+def readattributes(name,statspath): ## read the stats file to an attribute list
+    chars={}
+    with open('{0}/{1}_stats.txt'.format(statspath,name), 'r') as myfile:
+        lines = myfile.readlines()                                     ## <---- NEW
+
+    for line in lines:
+        line=line.strip()                                     ## <---- NEW
+        line = line.lower()                                     ## <---- NEW
+        if not line=="":
+            words=line.split(' | ')
+            if (line[0]+line[1])=='wl':
+                ratio=float(words[1])
+            else:
+                chars[int(words[0])] = float(words[1])
+    return [name,chars,ratio]
+
+
+
+##############################################################################
+# Composite functions
+##############################################################################
+
+#--- routine that populates the directiory with the fingerprints of the languages (in .txt and .png) ---
 def populatestats(samplespath,statspath):
     lst = os.listdir(samplespath)
     lst = lst
     for name in lst:
         if name.find('.txt') != -1:
-            name = name.rstrip('.txt')
-            stat(getattributes('{0}.txt'.format(name),samplespath),statspath)
-            plot(name,statspath)
+            name = name.rstrip('.txt')                                     ## <---- NEW
+            attributes = getattributes(name,samplespath)
+            stats(attributes,statspath)
+            plot(attributes,statspath)
 
-def readattributes(name,statspath): ## read the stats file to an attribute list
-    chars={}
-    with open('{0}/{1}_stats.txt'.format(statspath,name), 'r') as myfile:
-        lines = myfile.readlines()
-    for line in lines:
-        line=line.strip()
-        line = line.lower()
-        # Check for wordlength line (wl) or  blank line
-        if (line[0]+line[1])!='wl' and not line=="":
-            words=line.split(' | ')
-            chars[int(words[0])] = float(words[1])
-        if (line[0]+line[1])=='wl':
-            words=line.split(' | ')
-            ratio=float(words[1])
-    return [chars,ratio,name]
-
+#--- compare a test text and a known language and output the sum of the squares of the differences ---
 def compare(name_test,name_stats,statspath): ## compare existing sample file of language "name_stats" to attributes of the test text with name "name_test"
-    attributes_stats = readattributes(name_stats,statspath) ## use existing list
-    chars_stats      = attributes_stats[0]
-    ratio_stats      = attributes_stats[1]
-    attributes_test = getattributes(name_test) ## generate new list
-    chars_test  = attributes_test[0]
-    ratio_test  = attributes_test[1]
+    attributes_stats = readattributes(name_stats,statspath) ## use existing stats of known languages
+    attributes_test  = getattributes(name_test) ## generate new stats for the test text
+    chars_stats      = attributes_stats[1]
+    ratio_stats      = attributes_stats[2]
+    chars_test  = attributes_test[1]
+    ratio_test  = attributes_test[2]
     sumofsquares=0
     i=0
     while i<len(chars_stats):
@@ -75,12 +110,32 @@ def compare(name_test,name_stats,statspath): ## compare existing sample file of 
         i += 1
     return sumofsquares
 
+#--- find the most probable language and also plot the stuff ---
 def findlanguage(tobetested,statspath):
     lst = os.listdir(statspath)
     lst = lst
     squares = {}
-    for name in lst:
-        if name.find('_stats.txt') != -1:
-            name = name.rstrip('_stats.txt')
-            squares[name]=compare(tobetested,name,statspath)
-    return min(squares, key=squares.get)
+    for statsfile in lst:
+        if statsfile.find('_stats.txt') != -1:
+            statsfile = statsfile.rstrip('_stats.txt')
+            squares[statsfile]=compare(tobetested,statsfile,statspath)
+    print "Based on the frequency of the characters occuring, the language of {0}.txt is most probably:".format(tobetested) + "\n             ",
+    print min(squares, key=squares.get)   ## <---- NEW
+
+    plt.close('all')
+    fig = plt.figure()
+    fig = plot_append(getattributes(tobetested),4,3,1,fig,'red')
+    k=4
+    for statsfile in lst:
+        if statsfile.find('_stats.txt') != -1:
+            statsfile = statsfile.rstrip('_stats.txt')
+            fig = plot_append(readattributes(statsfile,statspath),4,3,k,fig)
+            k += 1
+    fig.tight_layout()
+    plt.savefig('{0}_compare.png'.format(tobetested))
+    plt.show()
+
+
+
+
+
