@@ -1,0 +1,111 @@
+%%%%%%%%%%%%%%%%
+%%% Preamble %%%
+%%%%%%%%%%%%%%%%
+
+
+% Class-definition
+\documentclass[a4paper, 11pt]{article}
+
+
+% Language and encodings
+\usepackage[english]{babel}					% or ngerman, dutch or french
+\usepackage[utf8]{inputenc}
+
+% Additional packages
+\usepackage[pdftex]{graphicx}
+\usepackage{geometry}
+\newgeometry{left=25mm,right=25mm,top=25mm,bottom=25mm} % page margins
+\setlength\parindent{0pt}                               % indent after each paragraph. Has been set to 0
+\setlength\parskip{5pt}                                 % distance between each paragraph. Has been set to 5pt
+\usepackage[comma]{natbib} %% Harvard style
+\usepackage{har2nat}
+\bibliographystyle{unsrtnat}
+
+
+% Defining, redefining and macroing
+%\date{}										% Don't show the date
+
+
+% Meta-Data
+\title{\vspace{-20mm}Title}		% \vspace{-XYmm} to "pull" the Titel upwards
+\author{\Large{Subtitle}\vspace{3mm} \\	% Little hack to get a subtitle without bitching with the titlepage environment
+		Author}
+
+
+
+
+
+\begin{document}
+
+
+\maketitle
+%\tableofcontents
+
+%\section{Test}
+\cite{brugemann2016}
+%\subsection{Test}
+%\section{Test}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Begin of the document %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%\pagenumbering{gobble}			% removes page number
+
+
+%%%%%%%%%%%
+% Figures %
+%%%%%%%%%%%
+
+
+%\begin{figure}[h!]
+
+%   \centering
+%   \includegraphics[width=0.5\textwidth ,right]{TVCartoon.jpg}
+%
+%   \caption{The cartoon by J.R. Mora}\label{fig:myfigure}
+%
+%\end{figure}
+
+%referencing a figure:
+    
+%\ref{fig:myfigure}
+
+
+%%%%%%%%
+% Text %
+%%%%%%%%
+
+%\begin{itemize} % gives a bullet list.
+
+%	\item Losing a job of resign
+%	\item Returning to or joining labourforce (stay-home-parents, students that left of finished school)
+%	\item Immigrating to a country
+
+%\end{itemize}
+
+%\begin{enumerate} % gives an enumerated list
+
+%	\item Finding a job
+%	\item Retiring / Staying at home for domestic reasons
+%	\item Dying
+
+%\end{enumerate}
+
+
+
+
+
+
+%\section*{Test}
+%Section without number and not showing in TOC
+
+
+%\subsection*{asdfrgd}
+%Subsection without number and not showing in TOC
+
+\addcontentsline{toc}{chapter}{List of References}%
+\bibliography{./bib.bib}
+\end{document}
