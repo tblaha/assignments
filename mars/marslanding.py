@@ -21,12 +21,10 @@ from matplotlib import pyplot as plt
 
 
 def getrho(P):
-    global atmos
     i=0
     while P[1] >= atmos['alt'][i+1]:
         i += 1
-    rho=(atmos['rho'][i]-atmos['rho'][i+1])/(atmos['alt'][i]-atmos['alt'][i+1]) * (P[1]-atmos['alt'][i]) + atmos['rho'][i]
-    return rho
+    return (atmos['rho'][i]-atmos['rho'][i+1])/(atmos['alt'][i]-atmos['alt'][i+1]) * (P[1]-atmos['alt'][i]) + atmos['rho'][i]
 
 def getme(V,m,P):
     if m>m_dry and P[1]<alt_fire:
@@ -36,14 +34,14 @@ def getme(V,m,P):
         return 0.
 
 def getT(V,m,P):
-    T= - V/np.linalg.norm(V) * getme(V,m,P) * ve
+    T= - V/sqrt(np.dot(V,V)) * getme(V,m,P) * ve
     if (v_target-V[1]):
         return T
     else:
         return 0.
 
 def getD(V,P):
-    D=-V*np.linalg.norm(V)*0.5*getrho(P)*CdS
+    D=-V*sqrt(np.dot(V,V))*0.5*getrho(P)*CdS
     return D
 
 def makeplots():
@@ -110,6 +108,8 @@ me_max=5. #kg/s
 ve=4400. # m/s
 CdS=4.92 # m^2
 m_dry=699. #kg
+
+#simulation and initial conditions
 ts=0.01 #s
 t=0.0 #s
 gamma=radians(-20.) #rads
@@ -127,7 +127,6 @@ while condition:
     #F=getD(V,P)+np.array([0.,-1.])*g0*m
     #print getme(V,m,P),getT(V,m,P)
     
-    
     gamma=degrees(-(atan2(V[0],V[1])-np.pi/2))
     a=F/m
     me = getme(V,m,P)
@@ -135,8 +134,7 @@ while condition:
     V += a*ts
     P += V*ts
     t += ts
-    
-    
+        
     #print F,a
     if not int(t*100)%10:
         results['me']   .append(me)
@@ -152,14 +150,4 @@ while condition:
     if P[1] <= alt_off:
         condition=False
 
-
 makeplots()
-
-
-
-
-
-
-
-
-
