@@ -1,23 +1,29 @@
-import pygame
 import numpy as np
 from math import *
-from matplotlib import pyplot as plt
 
-#pygame.init()
-#worldreso=(1.,0.75)
-#reso=(600,450)
-#screen=pygame.display.set_mode(reso)
 
-#def convert(worldcoordinates):
-    #xworld,yworld=worldreso
-    #xscreen,yscreen=reso
-    #xworldcoord,yworldcoord=worldcoordinates[0],worldcoordinates[1]
-    #xscreencoord=round(xworldcoord/xworld*xscreen)
-    #yscreencoord=round(yworldcoord/yworld*yscreen)
-    #screencoordinates=np.array([xscreencoord,yscreencoord])
-    #return screencoordinates
 
-#pygame.quit()
+
+
+def worldtoscreen(worldcoordinates):
+    xworld,yworld=worldreso
+    xscreen,yscreen=screenreso
+    xworldcoord,yworldcoord=worldcoordinates
+    xscreencoord=int(xworldcoord/xworld*xscreen+0.5)
+    yscreencoord=yscreen-int(yworldcoord/yworld*yscreen + 0.5)
+    screencoordinates=(xscreencoord,yscreencoord)
+    return screencoordinates
+
+def marstoscreen(marscoordinates):
+    xworld,yworld=worldreso
+    xscreen,yscreen=screenreso
+    xmarscoord,ymarscoord=marscoordinates
+    xscreencoord=int(xmarscoord/xworld*xscreen+0.5) + int(margin*xscreen+0.5)
+    xscreencoord=int((margin*xworld/(1+2*margin) + xmarscoord)* xscreen/xworld + 0.5)
+    yscreencoord=int(yscreen-(margin*yworld/(1+2*margin) + ymarscoord)* yscreen/yworld + 0.5)
+    screencoordinates=(xscreencoord,yscreencoord)
+    return screencoordinates
+
 
 
 def getrho(P):
@@ -27,7 +33,7 @@ def getrho(P):
     return (atmos['rho'][i]-atmos['rho'][i+1])/(atmos['alt'][i]-atmos['alt'][i+1]) * (P[1]-atmos['alt'][i]) + atmos['rho'][i]
 
 def getme(V,m,P):
-    if m>m_dry and P[1]<alt_fire:
+    if m>m_dry and P[1]<alt_fire and P[1]>alt_off:
         me=m*g0/ve +throttle*(v_target-V[1])
         return min(me,me_max)
     else:
@@ -45,6 +51,7 @@ def getD(V,P):
     return D
 
 def makeplots():
+    from matplotlib import pyplot as plt
     plt.close('all')
     fig = plt.figure()
 
@@ -63,9 +70,9 @@ def makeplots():
     plt.gca().invert_xaxis()
 
     sc = fig.add_subplot(2,3,4)
-    sc.plot(results['Py'],results['gamma'])
-    sc.set_title('Angle over alt')
-    plt.gca().invert_xaxis()
+    sc.plot(results['t'],results['Py'])
+    sc.set_title('Altitude over time')
+    #plt.gca().invert_xaxis()
 
     sc = fig.add_subplot(2,3,5)
     sc.plot(results['Py'],results['me'])
@@ -80,6 +87,59 @@ def makeplots():
     fig.tight_layout()
     plt.show()
 
+def animate():
+    import pygame as pg
+    pg.init()
+    pg.font.init()
+    myfont = pg.font.SysFont('monospace', 14)
+    
+    scale=0.04
+    timefactor=15.
+    fineness=20
+    
+    xscreen,yscreen=screenreso
+    screen=pg.display.set_mode(screenreso)
+    scrrect=screen.get_rect()
+    black=(0,0,0)
+    
+    noflame_orig = pg.image.load("sprites/lander_noflame.png")
+    flame_orig   = pg.image.load("sprites/lander_flame.png")
+    
+    clock = pg.time.Clock()
+    
+    while True:
+        trun = timefactor*0.001*pg.time.get_ticks()
+        if trun >= results['t'][-1]:
+            raw_input("Press Enter!")
+            break
+        i=0
+        while results['t'][i]<=trun:
+            i+=1
+        pg.draw.rect(screen,black,scrrect)
+        
+        if results['me'][i]:        
+            flame     = pg.transform.rotozoom(flame_orig,90+results['gamma'][i],scale)
+            flamerect = flame.get_rect()
+        
+            flamerect.center=marstoscreen((results['Px'][i],results['Py'][i]))
+            screen.blit(flame,flamerect)
+        else:
+            noflame     = pg.transform.rotozoom(noflame_orig,90+results['gamma'][i],scale)
+            noflamerect = noflame.get_rect()
+        
+            noflamerect.center=marstoscreen((results['Px'][i],results['Py'][i]))
+            screen.blit(noflame,noflamerect)
+        
+        label = myfont.render('Alt: {0:07.1f} m    | Horiz. Pos.: {1:05.0f} m | Vert. Speed: {2:04.0f} m/s | Horiz. Speed: {3:03.0f} m/s'.format(results['Py'][i],results['Px'][i],results['Vy'][i],results['Vx'][i]), False, (255, 255, 255))
+        label2= myfont.render('Angle: {0:05.1f} deg  | Mass Flow: {1:0.2f} kg/s | Fuel mass: {2:05.2f} kg   | Sim. time: {3:02.0f} s'.format(-results['gamma'][i],results['me'][i],results['mfuel'][i],results['t'][i]), False, (255, 255, 255))
+        screen.blit(label, (yscreen*0.01,yscreen*0.96))
+        screen.blit(label2,(yscreen*0.01,yscreen*0.98))
+        
+        pg.display.flip()
+        pg.time.Clock().tick(fineness*timefactor)
+    pg.quit()
+    
+    
 atmos={'alt':[],'temp':[],'rho':[],'a':[]}
 with open('data/mars.txt','r') as atmosfile:
     lines=atmosfile.readlines()
@@ -91,14 +151,19 @@ with open('data/mars.txt','r') as atmosfile:
             atmos['temp'].append(float(words[1]))
             atmos['rho'].append(float(words[2]))
             atmos['a'].append(float(words[3]))
-    
+
+
+#-------------------------------------------------------------------
+# Begin of program
+#-------------------------------------------------------------------
+
 
 # params:
 alt_off=0.3 #m
 v_target=-2. #m/s
 throttle=0.05
-m_fuel=90. #kg
-alt_fire=1900. #m
+m_fuel=66. #kg
+alt_fire=1746. #m
 
 #constants
 g0=3.711 # m/s^2
@@ -142,12 +207,17 @@ while condition:
         results['mfuel'].append(m-m_dry)
         results['Px']   .append(P[0])
         results['Py']   .append(P[1])
-        results['V']   .append((V[0]**2+V[1]**2)**0.5)
+        results['V']    .append((V[0]**2+V[1]**2)**0.5)
         results['Vx']   .append(V[0])
         results['Vy']   .append(V[1])
-        results['gamma']   .append(gamma)
+        results['gamma'].append(gamma)
     
-    if P[1] <= alt_off:
+    if P[1] <= 0:
+        print "Touchdown at {0} m/s vertical speed, {1} m/s horizontal speed, angle {2} deg and {3} kg of fuel left after {4} s have passed".format(results['Vy'][-1],results['Vx'][-1], results['gamma'][-1], results['mfuel'][-1],results['t'][-1])
         condition=False
 
-makeplots()
+#makeplots()
+margin=0.1
+worldreso=((1+2*margin)*results['Px'][-1],(1+2*margin)*results['Py'][0])
+screenreso=(700,int(results['Py'][0]/results['Px'][-1] * 700. + 0.5))
+animate()
