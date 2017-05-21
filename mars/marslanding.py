@@ -24,8 +24,6 @@ def marstoscreen(marscoordinates):
     screencoordinates=(xscreencoord,yscreencoord)
     return screencoordinates
 
-
-
 def getrho(P):
     i=0
     while P[1] >= atmos['alt'][i+1]:
@@ -108,12 +106,12 @@ def animate():
     clock = pg.time.Clock()
     
     while True:
-        trun = timefactor*0.001*pg.time.get_ticks()
-        if trun >= results['t'][-1]:
+        simtime = timefactor*0.001*pg.time.get_ticks()
+        if simtime >= results['t'][-1]:
             raw_input("Press Enter!")
             break
         i=0
-        while results['t'][i]<=trun:
+        while results['t'][i]<=simtime:
             i+=1
         pg.draw.rect(screen,black,scrrect)
         
@@ -137,6 +135,7 @@ def animate():
         
         pg.display.flip()
         pg.time.Clock().tick(fineness*timefactor)
+        
     pg.quit()
     
     
