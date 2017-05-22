@@ -1,28 +1,18 @@
 import numpy as np
 from math import *
 
+#constants
+g0 = 3.711   # m/s^2  | mean sea level gravity on mars
+R  = 191.84  # J/kg/K | gas constant
 
+#vehicle constants
+me_max = 5.    # kg/s | Maximum engine mass flow
+ve     = 4400. # m/s  | Relative exhaust velocity 
+CdS    = 4.92  # m^2  | Frontal area times drag coefficient (see getD(V,P))
+m_dry  = 699.  # kg   | S/C dry mass
 
-
-
-def worldtoscreen(worldcoordinates):
-    xworld,yworld=worldreso
-    xscreen,yscreen=screenreso
-    xworldcoord,yworldcoord=worldcoordinates
-    xscreencoord=int(xworldcoord/xworld*xscreen+0.5)
-    yscreencoord=yscreen-int(yworldcoord/yworld*yscreen + 0.5)
-    screencoordinates=(xscreencoord,yscreencoord)
-    return screencoordinates
-
-def marstoscreen(marscoordinates):
-    xworld,yworld=worldreso
-    xscreen,yscreen=screenreso
-    xmarscoord,ymarscoord=marscoordinates
-    xscreencoord=int(xmarscoord/xworld*xscreen+0.5) + int(margin*xscreen+0.5)
-    xscreencoord=int((margin*xworld/(1+2*margin) + xmarscoord)* xscreen/xworld + 0.5)
-    yscreencoord=int(yscreen-(margin*yworld/(1+2*margin) + ymarscoord)* yscreen/yworld + 0.5)
-    screencoordinates=(xscreencoord,yscreencoord)
-    return screencoordinates
+#Initialisation
+t=0.0 # s | current simulation time
 
 def getrho(P):
     i=0
@@ -85,15 +75,34 @@ def makeplots():
     fig.tight_layout()
     plt.show()
 
+def worldtoscreen(worldcoordinates):
+    xworld,yworld=worldreso
+    xscreen,yscreen=screenreso
+    xworldcoord,yworldcoord=worldcoordinates
+    xscreencoord=int(xworldcoord/xworld*xscreen+0.5)
+    yscreencoord=yscreen-int(yworldcoord/yworld*yscreen + 0.5)
+    screencoordinates=(xscreencoord,yscreencoord)
+    return screencoordinates
+
+def marstoscreen(marscoordinates):
+    xworld,yworld=worldreso
+    xscreen,yscreen=screenreso
+    xmarscoord,ymarscoord=marscoordinates
+    xscreencoord=int(xmarscoord/xworld*xscreen+0.5) + int(margin*xscreen+0.5)
+    xscreencoord=int((margin*xworld/(1+2*margin) + xmarscoord)* xscreen/xworld + 0.5)
+    yscreencoord=int(yscreen-(margin*yworld/(1+2*margin) + ymarscoord)* yscreen/yworld + 0.5)
+    screencoordinates=(xscreencoord,yscreencoord)
+    return screencoordinates
+
 def animate():
     import pygame as pg
     pg.init()
     pg.font.init()
     myfont = pg.font.SysFont('monospace', 11)
     
-    scale=0.03
+    scale=0.025
     nextsample=0.0
-    timefactor=5.
+    timefactor=1.
     fps=24
     step=1./(timefactor*fps)
     
@@ -114,7 +123,6 @@ def animate():
             break
         
         if simtime*timefactor >= nextsample:
-            print simtime
             nextsample += step
             i=0
             while results['t'][i]<=simtime*timefactor:
@@ -130,7 +138,7 @@ def animate():
             else:
                 noflame     = pg.transform.rotozoom(noflame_orig,90+results['gamma'][i],scale)
                 noflamerect = noflame.get_rect()
-            
+                
                 noflamerect.center=marstoscreen((results['Px'][i],results['Py'][i]))
                 screen.blit(noflame,noflamerect)
             
@@ -148,68 +156,56 @@ def animate():
     pg.quit()
     
     
-atmos={'alt':[],'temp':[],'rho':[],'a':[]}
+atmos={'alt':[],'temp':[],'rho':[],'a':[],'p':[]}
 with open('data/mars.txt','r') as atmosfile:
     lines=atmosfile.readlines()
     for line in lines:
         line.replace('\n','')
         if line[0] != '*' and not line.strip()=="":
-            words = line.split(" ")
-            atmos['alt'].append(float(words[0])*1000)
-            atmos['temp'].append(float(words[1]))
-            atmos['rho'].append(float(words[2]))
-            atmos['a'].append(float(words[3]))
+            words = line.split()
+            atmos['alt'].append(float(words[0])*1000)             # m      | altitude over sea level
+            atmos['temp'].append(float(words[1]))                 # K      | temperature
+            atmos['rho'].append(float(words[2]))                  # kg/m^3 | density
+            atmos['a'].append(float(words[3]))                    # m/s    | speed of sound
+            atmos['p'].append(float(words[2])*R*float(words[1]))  # N/m^2  | pressure (computed, not read from file)
 
 
 #-------------------------------------------------------------------
 # Begin of program
 #-------------------------------------------------------------------
 
-
 # params:
-alt_off=0.3 #m
-v_target=-2. #m/s
-throttle=0.05
-m_fuel=67. #kg
-alt_fire=1750. #m
+ts       = 0.01  # s   | time step per frame in simulation
+m_fuel   = 70.   # kg  | initial fuel on board
+alt_fire = 1770. # m   | Altitude to fire thrusters
+alt_off  = 0.3   # m   | Thruster cut-off altitude
+v_target = -2.   # m/s | Target velocity (see getme(V,m,P))
+throttle = 0.05  # -   | factor in throttling law (see getme(V,m,P))
 
-#constants
-g0=3.711 # m/s^2
+# Initial conditions
+gamma  = radians(-20.)         # rads | angle of S/C with horizontal
+V_init = 262.                  # m/s  | initial speed
+P      = np.array([0.,20000.]) # m    | Position vector
 
-#vehicle constants
-me_max=5. #kg/s
-ve=4400. # m/s
-CdS=4.92 # m^2
-m_dry=699. #kg
+m      = m_dry + m_fuel                                 # kg  | Total mass 
+V      = np.array([np.cos(gamma),np.sin(gamma)])*V_init # m/s | Velocity vector
 
-#simulation and initial conditions
-ts=0.01 #s
-t=0.0 #s
-gamma=radians(-20.) #rads
-V_init=262. #m/s
-P=np.array([0.,20000.]) # m
 
-m = m_dry + m_fuel #kg
-V=np.array([np.cos(gamma),np.sin(gamma)])*V_init # m/s as 2d vector
-t=0.
 
 results={'t':[],'mfuel':[],'me':[],'Px':[],'Py':[],'V':[],'Vx':[],'Vy':[],'gamma':[]}
 condition = True
 while condition:
-    F=getD(V,P)+getT(V,m,P)+np.array([0.,-1.])*g0*m
-    #F=getD(V,P)+np.array([0.,-1.])*g0*m
-    #print getme(V,m,P),getT(V,m,P)
+    F=getD(V,P)+getT(V,m,P)+np.array([0.,-1.])*g0*m  # N     | vectorial sum of all forces
     
-    gamma=degrees(-(atan2(V[0],V[1])-np.pi/2))
-    a=F/m
-    me = getme(V,m,P)
-    m -= me*ts
-    V += a*ts
-    P += V*ts
-    t += ts
+    gamma=degrees(-(atan2(V[0],V[1])-np.pi/2))       # deg   | compute current angle from velocity vector (for user output and animation, avoided for computation)
+    a=F/m                                            # m/s^2 | acceleration vector
+    me = getme(V,m,P)                                # kg/s  | propellant mass flow
+    m -= me*ts                                       # kg    | new total mass
+    V += a*ts                                        # m/s   | new velocity vector
+    P += V*ts                                        # m     | new position vector
+    t += ts                                          # s     | new time
         
-    #print F,a
-    if not int(t*100)%10:
+    if not int(t*100)%10:                            # Append to results dict 10 times per second
         results['me']   .append(me)
         results['t']    .append(t)
         results['mfuel'].append(m-m_dry)
@@ -220,12 +216,14 @@ while condition:
         results['Vy']   .append(V[1])
         results['gamma'].append(gamma)
     
-    if P[1] <= 0:
+    if P[1] <= 0:                                    # Touchdown?
         print "Touchdown at {0} m/s vertical speed, {1} m/s horizontal speed, angle {2} deg and {3} kg of fuel left after {4} s have passed".format(results['Vy'][-1],results['Vx'][-1], results['gamma'][-1], results['mfuel'][-1],results['t'][-1])
         condition=False
 
-makeplots()
-margin=0.1
-worldreso=((1+2*margin)*results['Px'][-1],(1+2*margin)*results['Py'][0])
-screenreso=(650,int(results['Py'][0]/results['Px'][-1] * 650. + 0.5))
-#animate()
+margin=0.1                                                               # -  | margin fraction in animation window
+xscreenwidth=650                                                         # px | static width of screen
+worldreso=((1+2*margin)*results['Px'][-1],(1+2*margin)*results['Py'][0]) # m  | dynamic world coordinate system 
+screenreso=(650,int(results['Py'][0]/results['Px'][-1] * 650. + 0.5))    # px | dynamic screen coordinates
+
+#makeplots() # either this
+animate()  # or this
