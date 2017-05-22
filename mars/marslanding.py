@@ -89,11 +89,13 @@ def animate():
     import pygame as pg
     pg.init()
     pg.font.init()
-    myfont = pg.font.SysFont('monospace', 14)
+    myfont = pg.font.SysFont('monospace', 11)
     
-    scale=0.04
-    timefactor=15.
-    fineness=20
+    scale=0.03
+    nextsample=0.0
+    timefactor=5.
+    fps=24
+    step=1./(timefactor*fps)
     
     xscreen,yscreen=screenreso
     screen=pg.display.set_mode(screenreso)
@@ -106,35 +108,42 @@ def animate():
     clock = pg.time.Clock()
     
     while True:
-        simtime = timefactor*0.001*pg.time.get_ticks()
-        if simtime >= results['t'][-1]:
+        simtime = 0.001*pg.time.get_ticks() # abs time in ms since init was called
+        if simtime*timefactor >= results['t'][-1]:
             raw_input("Press Enter!")
             break
-        i=0
-        while results['t'][i]<=simtime:
-            i+=1
-        pg.draw.rect(screen,black,scrrect)
         
-        if results['me'][i]:        
-            flame     = pg.transform.rotozoom(flame_orig,90+results['gamma'][i],scale)
-            flamerect = flame.get_rect()
-        
-            flamerect.center=marstoscreen((results['Px'][i],results['Py'][i]))
-            screen.blit(flame,flamerect)
-        else:
-            noflame     = pg.transform.rotozoom(noflame_orig,90+results['gamma'][i],scale)
-            noflamerect = noflame.get_rect()
-        
-            noflamerect.center=marstoscreen((results['Px'][i],results['Py'][i]))
-            screen.blit(noflame,noflamerect)
-        
-        label = myfont.render('Alt: {0:07.1f} m    | Horiz. Pos.: {1:05.0f} m | Vert. Speed: {2:04.0f} m/s | Horiz. Speed: {3:03.0f} m/s'.format(results['Py'][i],results['Px'][i],results['Vy'][i],results['Vx'][i]), False, (255, 255, 255))
-        label2= myfont.render('Angle: {0:05.1f} deg  | Mass Flow: {1:0.2f} kg/s | Fuel mass: {2:05.2f} kg   | Sim. time: {3:02.0f} s'.format(-results['gamma'][i],results['me'][i],results['mfuel'][i],results['t'][i]), False, (255, 255, 255))
-        screen.blit(label, (yscreen*0.01,yscreen*0.96))
-        screen.blit(label2,(yscreen*0.01,yscreen*0.98))
-        
-        pg.display.flip()
-        pg.time.Clock().tick(fineness*timefactor)
+        if simtime*timefactor >= nextsample:
+            print simtime
+            nextsample += step
+            i=0
+            while results['t'][i]<=simtime*timefactor:
+                i+=1
+            pg.draw.rect(screen,black,scrrect)
+            
+            if results['me'][i]:        
+                flame     = pg.transform.rotozoom(flame_orig,90+results['gamma'][i],scale)
+                flamerect = flame.get_rect()
+            
+                flamerect.center=marstoscreen((results['Px'][i],results['Py'][i]))
+                screen.blit(flame,flamerect)
+            else:
+                noflame     = pg.transform.rotozoom(noflame_orig,90+results['gamma'][i],scale)
+                noflamerect = noflame.get_rect()
+            
+                noflamerect.center=marstoscreen((results['Px'][i],results['Py'][i]))
+                screen.blit(noflame,noflamerect)
+            
+            currentfps=clock.get_fps()
+            label = myfont.render('Alt: {0:07.1f} m    | Horiz. Pos.: {1:05.0f} m | Vert. Speed: {2:04.0f} m/s | Horiz. Speed: {3:03.0f} m/s'.format(results['Py'][i],results['Px'][i],results['Vy'][i],results['Vx'][i]), False, (255, 255, 255))
+            label2= myfont.render('Angle: {0:05.1f} deg  | Mass Flow: {1:0.2f} kg/s | Fuel mass: {2:05.2f} kg   | Sim. time: {3:02.0f} s'.format(-results['gamma'][i],results['me'][i],results['mfuel'][i],results['t'][i]), False, (255, 255, 255))
+            fpslabel= myfont.render('fps: {0:.2f}'.format(currentfps), False, (255, 255, 255))
+            screen.blit(label, (xscreen*0.01,yscreen*0.96))
+            screen.blit(label2,(xscreen*0.01,yscreen*0.98))
+            screen.blit(fpslabel,(xscreen*0.01,yscreen*0.01))
+            
+            pg.display.flip()
+            clock.tick(fps)                  # limit fps
         
     pg.quit()
     
@@ -161,8 +170,8 @@ with open('data/mars.txt','r') as atmosfile:
 alt_off=0.3 #m
 v_target=-2. #m/s
 throttle=0.05
-m_fuel=66. #kg
-alt_fire=1746. #m
+m_fuel=67. #kg
+alt_fire=1750. #m
 
 #constants
 g0=3.711 # m/s^2
@@ -215,8 +224,8 @@ while condition:
         print "Touchdown at {0} m/s vertical speed, {1} m/s horizontal speed, angle {2} deg and {3} kg of fuel left after {4} s have passed".format(results['Vy'][-1],results['Vx'][-1], results['gamma'][-1], results['mfuel'][-1],results['t'][-1])
         condition=False
 
-#makeplots()
+makeplots()
 margin=0.1
 worldreso=((1+2*margin)*results['Px'][-1],(1+2*margin)*results['Py'][0])
-screenreso=(700,int(results['Py'][0]/results['Px'][-1] * 700. + 0.5))
-animate()
+screenreso=(650,int(results['Py'][0]/results['Px'][-1] * 650. + 0.5))
+#animate()
