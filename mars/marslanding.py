@@ -95,65 +95,96 @@ def marstoscreen(marscoordinates):
     return screencoordinates
 
 def animate():
-    import pygame as pg
-    pg.init()
-    pg.font.init()
-    myfont = pg.font.SysFont('monospace', 11)
+    #----------------------------------------------#
+    #-----initialisation stuff and definitions-----#
+    #----------------------------------------------#
+    import pygame as pg                           # Import the package only when needed, so it is not loaded when animate() is not even called
+    pg.init()                                     # Initialise pygame (has no visual effect)
+    pg.font.init()                                # Initialise the font stuff for labels
+    myfont = pg.font.SysFont('monospace', 11)     # define a monospace font
     
-    scale=0.025
-    nextsample=0.0
-    timefactor=1.
-    fps=24
-    step=1./(timefactor*fps)
+    scale=0.025                                   # -   | used as a scale for the lander sprites
+    nextsample=0.0                                # s   | will hold the time since pg.init() for when the next frame that has to be drawn
+    timefactor=1.                                 # -   | stretching time 
+    fps=24                                        # 1/s | will be used to limit the amount of frames drawn per second (so less CPU usage)
+    step=1./(timefactor*fps)                      # s   | time interval between drawing two frames
+    currentfps=0.                                 # 1/s | will hold the actual fps count
     
-    xscreen,yscreen=screenreso
-    screen=pg.display.set_mode(screenreso)
-    scrrect=screen.get_rect()
+    screen=pg.display.set_mode(screenreso)        # I think this actually opens a window with the resolution defined at the end of this file
+    xscreen,yscreen=screenreso                    # px  | screenresolution
+    scrrect=screen.get_rect()                     # this gets the screen rectangle. I understand a rect as the geometric basis for the screen surface that 
+                                                  # can be used to read or assign values (like position and size)
     black=(0,0,0)
     
-    noflame_orig = pg.image.load("sprites/lander_noflame.png")
+    noflame_orig = pg.image.load("sprites/lander_noflame.png") # load the landersprites as objects
     flame_orig   = pg.image.load("sprites/lander_flame.png")
     
-    clock = pg.time.Clock()
+    clock = pg.time.Clock()                       # initialise the clock (will be used to monitor/limit fps)
     
     while True:
-        simtime = 0.001*pg.time.get_ticks() # abs time in ms since init was called
-        if simtime*timefactor >= results['t'][-1]:
-            raw_input("Press Enter!")
+        simtime = 0.001*pg.time.get_ticks()*timefactor         # s | time since pg.init() was called, streched with the timefactor
+        if simtime >= results['t'][-1]:                        # if exceeds mission time
+            raw_input("Press Enter!")                             # --> freeze the screen
             break
         
-        if simtime*timefactor >= nextsample:
-            nextsample += step
+        if simtime >= nextsample:                              # if next sample should be drawn
+            nextsample += step                                    # --> reset nextsample
             i=0
-            while results['t'][i]<=simtime*timefactor:
+            while results['t'][i]<=simtime:                    # get relevant position in results dict
                 i+=1
-            pg.draw.rect(screen,black,scrrect)
-            
-            if results['me'][i]:        
-                flame     = pg.transform.rotozoom(flame_orig,90+results['gamma'][i],scale)
-                flamerect = flame.get_rect()
-            
-                flamerect.center=marstoscreen((results['Px'][i],results['Py'][i]))
-                screen.blit(flame,flamerect)
-            else:
-                noflame     = pg.transform.rotozoom(noflame_orig,90+results['gamma'][i],scale)
-                noflamerect = noflame.get_rect()
                 
+            #-----------------------#
+            #----animation stuff----#
+            #-----------------------#
+            pg.draw.rect(screen,black,scrrect)                                             # clear the screen every frame
+            
+            if results['me'][i]:                                                           # ---if engine active---
+                                                                                              # --> draw the flame sprite
+                flame     = pg.transform.rotozoom(flame_orig,90+results['gamma'][i],scale) # import the sprite as an oriented and scaled surface that needs 
+                                                                                           # to be projected ("blitted") onto the screen surface guided by  
+                                                                                           # a rect() that holds its position.
+                
+                flamerect = flame.get_rect()                                               # again, get the current position and size of the surface rect()
+                
+                flamerect.center=marstoscreen((results['Px'][i],results['Py'][i]))         # modify position of the rect() by converting mars coordinates
+                                                                                           # (actual distances) to screen coordinates (see bottom of file)
+                
+                screen.blit(flame,flamerect)                                               # blit it to the screen (note: this doesnt update the screen yet)
+                
+            else:                                                                          # ---same for no-flame sprite if not firing thrusters--- #
+                noflame     = pg.transform.rotozoom(noflame_orig,90+results['gamma'][i],scale)
+                
+                noflamerect = noflame.get_rect()
                 noflamerect.center=marstoscreen((results['Px'][i],results['Py'][i]))
+                
                 screen.blit(noflame,noflamerect)
             
-            currentfps=clock.get_fps()
+            #-------------------#
+            #----label stuff----#
+            #-------------------#
+            # label = myfont.render('text', antialising, color)
             label = myfont.render('Alt: {0:07.1f} m    | Horiz. Pos.: {1:05.0f} m | Vert. Speed: {2:04.0f} m/s | Horiz. Speed: {3:03.0f} m/s'.format(results['Py'][i],results['Px'][i],results['Vy'][i],results['Vx'][i]), False, (255, 255, 255))
             label2= myfont.render('Angle: {0:05.1f} deg  | Mass Flow: {1:0.2f} kg/s | Fuel mass: {2:05.2f} kg   | Sim. time: {3:02.0f} s'.format(-results['gamma'][i],results['me'][i],results['mfuel'][i],results['t'][i]), False, (255, 255, 255))
             fpslabel= myfont.render('fps: {0:.2f}'.format(currentfps), False, (255, 255, 255))
-            screen.blit(label, (xscreen*0.01,yscreen*0.96))
-            screen.blit(label2,(xscreen*0.01,yscreen*0.98))
+            screen.blit(label, (xscreen*0.01,yscreen*0.96))   # blit them to the screen guided by a very simple rect()
+            screen.blit(label2,(xscreen*0.01,yscreen*0.98))   # rect() in these cases is just tuple indicating the position of the left upper corner
             screen.blit(fpslabel,(xscreen*0.01,yscreen*0.01))
+
+            #--------------------# note: this has no effect on the actual simulation timing (so if realtime or not)
+            #----timing stuff----#       because pg.time.get_ticks() is an absolute measure of the time passed.
+            #--------------------#       --> this just reduces CPU load
+            currentfps=clock.get_fps()                                 # 1/s | gets fps by averaging last 10 calls to clock.tick()
+            clock.tick(fps)                                            # limit fps. Not sure how this works precisely, but it seems to...
             
+            #------------------------------------------------------------------------------------------#
+            #----finally update the screen with all changes made in the iteration of the while loop----#
+            #------- that was: reset the screen (by coloring a rect() in black)  ----------------------#
+            #-------           draw the lander in its current state and position ----------------------#
+            #-------           draw the labels                                   ----------------------#
+            #------------------------------------------------------------------------------------------#
             pg.display.flip()
-            clock.tick(fps)                  # limit fps
         
-    pg.quit()
+    pg.quit() # close the window
     
     
 atmos={'alt':[],'temp':[],'rho':[],'a':[],'p':[]}
@@ -192,7 +223,7 @@ V      = np.array([np.cos(gamma),np.sin(gamma)])*V_init # m/s | Velocity vector
 
 
 
-results={'t':[],'mfuel':[],'me':[],'Px':[],'Py':[],'V':[],'Vx':[],'Vy':[],'gamma':[]}
+results={'t':[],'mfuel':[],'me':[],'Px':[],'Py':[],'V':[],'Vx':[],'Vy':[],'gamma':[]} # results dictionary, very important :)
 condition = True
 while condition:
     F=getD(V,P)+getT(V,m,P)+np.array([0.,-1.])*g0*m  # N     | vectorial sum of all forces
@@ -227,3 +258,24 @@ screenreso=(650,int(results['Py'][0]/results['Px'][-1] * 650. + 0.5))    # px | 
 
 #makeplots() # either this
 animate()  # or this
+
+#
+#                Screen:
+#             
+#|-------------------------------------|
+#|       World coordinate box          |
+#|      with margins all around        |
+#|  Py|--------------------------|     |
+#| max|                          |     |
+#|    |    Mars coordinate box   |     |
+#|    |      where the s/c       |     |
+#|    |     will be animated     |     |
+#|    |                          |     |
+#|    |                          |     |
+#|  0m|--------------------------|     |
+#|    0m                       Px_max  |
+#|    -space for labels and stuff-     |
+#|-------------------------------------|
+#
+
+
