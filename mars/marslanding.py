@@ -105,7 +105,6 @@ def animate():
     
     scale=0.025                                   # -   | used as a scale for the lander sprites
     nextsample=0.0                                # s   | will hold the time since pg.init() for when the next frame that has to be drawn
-    timefactor=1.                                 # -   | stretching time 
     fps=24                                        # 1/s | will be used to limit the amount of frames drawn per second (so less CPU usage)
     step=1./(timefactor*fps)                      # s   | time interval between drawing two frames
     currentfps=0.                                 # 1/s | will hold the actual fps count
@@ -185,7 +184,7 @@ def animate():
             pg.display.flip()
         
     pg.quit() # close the window
-    
+
     
 atmos={'alt':[],'temp':[],'rho':[],'a':[],'p':[]}
 with open('data/mars.txt','r') as atmosfile:
@@ -248,16 +247,14 @@ while condition:
         results['gamma'].append(gamma)
     
     if P[1] <= 0:                                    # Touchdown?
-        print "Touchdown at {0} m/s vertical speed, {1} m/s horizontal speed, angle {2} deg and {3} kg of fuel left after {4} s have passed".format(results['Vy'][-1],results['Vx'][-1], results['gamma'][-1], results['mfuel'][-1],results['t'][-1])
+        print "\n***Simulation parameters***\n   {0:0.0f} m     firing altitude\n   {1} kg    fuel onboard".format(alt_fire,m_fuel)
+        print "\n***Touchdown simulated to occur at***\n  {0:0.2f} m/s   vertical speed\n   {1:0.2f} m/s   horizontal speed\n  {2:0.1f} deg   angle with the horizontal\n   {3:0.2f} kg    of fuel left\n   {4:0.0f}  s     elapsed".format(results['Vy'][-1],results['Vx'][-1], results['gamma'][-1], results['mfuel'][-1],results['t'][-1])
         condition=False
 
 margin=0.1                                                               # -  | margin fraction in animation window
 xscreenwidth=650                                                         # px | static width of screen
 worldreso=((1+2*margin)*results['Px'][-1],(1+2*margin)*results['Py'][0]) # m  | dynamic world coordinate system 
 screenreso=(650,int(results['Py'][0]/results['Px'][-1] * 650. + 0.5))    # px | dynamic screen coordinates
-
-#makeplots() # either this
-animate()  # or this
 
 #
 #                Screen:
@@ -278,4 +275,8 @@ animate()  # or this
 #|-------------------------------------|
 #
 
+timefactor=3.                                 # -   | stretching time 
+print "\n***Close plot window to start animation of the results with timefactor {0:0.0f}***\n".format(timefactor)
+makeplots()
+animate()
 
