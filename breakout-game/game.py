@@ -34,12 +34,12 @@ brickscale  = brickpixel/1544.
 brickheight  = 539*brickscale
 brick_orig  = pg.image.load("brick.png")
 
-ballspeed = 3E2
+ballspeed = 5E2
 ballscale = 0.8
 ball_orig = pg.image.load("ball.gif")
 ball_orig = pg.transform.rotozoom(ball_orig,0,ballscale)
 P = np.array([500.,70.])
-V = np.array([7., ballspeed])
+V = np.array([0., ballspeed])
 
 boardspeed = 3E2
 boardscale = 0.225
@@ -48,7 +48,7 @@ board_orig = pg.transform.rotozoom(board_orig,0,boardscale)
 P_board = np.array([500.,0.])
 V_board = np.array([0.,0.])
 
-fps=40.                                       # 1/s | will be used to limit the amount of frames drawn per second (so less CPU usage)
+fps=120.                                       # 1/s | will be used to limit the amount of frames drawn per second (so less CPU usage)
 
 rows=4
 bricks = [[],[],[],[]] # 4 rows
@@ -90,10 +90,8 @@ while True:
     if ballrect.colliderect(boardrect) and k <= 0:
         k=10 # 0^2 + 1^2 = ballspeed^2
         V[0] = -ballspeed * (boardrect.topleft[0]+boardrect.width*0.5-worldtoscreen(P)[0])/(boardrect.width*0.5)
-        print (boardrect.topleft[0]+boardrect.width*0.5-worldtoscreen(P)[0])/(boardrect.width*0.5)
         V[1] = sqrt(ballspeed**2 - V[0]**2)
-        print np.linalg.norm(V)
-    
+        
     changed=0
     for a in range(len(bricks)):
         for b in range(len(bricks[a])):
@@ -124,7 +122,8 @@ while True:
                             changed=1 # came from top
                             print "top"
                             V[1] *= -1
-                        elif (angletopleft >= 3*pi/4. or angletopleft <= -pi/2.) and anglebotleft <= -3*pi/4.:
+                        #elif (angletopleft >= 3*pi/4. or angletopleft <= -pi/2.) and anglebotleft <= -3*pi/4.:
+                        else:
                             changed=1 # came from left
                             print "left"
                             V[0] *= -1
@@ -146,15 +145,6 @@ while True:
     if P[1] < 0:
         print "You lose!"
         break
-    
-    
-   
-    
-    
-    
-    
-    
-    #collidelist(list)
         
     #--------------------# note: this has no effect on the actual simulation timing (so if realtime or not)
     #----timing stuff----#       because pg.time.get_ticks() is an absolute measure of the time passed.
