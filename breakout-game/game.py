@@ -34,7 +34,7 @@ brickscale  = brickpixel/1544.
 brickheight  = 539*brickscale
 brick_orig  = pg.image.load("brick.png")
 
-ballspeed = 5E2
+ballspeed = 4E2
 ballscale = 0.8
 ball_orig = pg.image.load("ball.gif")
 ball_orig = pg.transform.rotozoom(ball_orig,0,ballscale)
@@ -54,12 +54,20 @@ rows=4
 bricks = [[],[],[],[]] # 4 rows
 brickbegin=0.9*yworld
 for a in range(rows):
-    for b in range(perrow):
-        brick     = pg.transform.rotozoom(brick_orig,0,brickscale)
-        brickrect = brick.get_rect()
-        coords    = (brickpixel*xws*b,brickbegin-brickheight*yws*a)
-        bricks[a].append([brickrect,1])
-        bricks[a][b][0].topleft=worldtoscreen(coords)
+    if not (a+2)%2:
+        for b in range(perrow):
+            brick     = pg.transform.rotozoom(brick_orig,0,brickscale)
+            brickrect = brick.get_rect()
+            coords    = (brickpixel*xws*b,brickbegin-brickheight*yws*a)
+            bricks[a].append([brickrect,1])
+            bricks[a][b][0].topleft=worldtoscreen(coords)
+    else:
+        for b in range(perrow+1):
+            brick     = pg.transform.rotozoom(brick_orig,0,brickscale)
+            brickrect = brick.get_rect()
+            coords    = (brickpixel*xws*b-brickpixel*xws/2.,brickbegin-brickheight*yws*a)
+            bricks[a].append([brickrect,1])
+            bricks[a][b][0].topleft=worldtoscreen(coords)
         
 score=0
 
@@ -89,7 +97,7 @@ while True:
         k -=1
     if ballrect.colliderect(boardrect) and k <= 0:
         k=10 # 0^2 + 1^2 = ballspeed^2
-        V[0] = -ballspeed * (boardrect.topleft[0]+boardrect.width*0.5-worldtoscreen(P)[0])/(boardrect.width*0.5)
+        V[0] = -ballspeed * (boardrect.topleft[0]+boardrect.width*0.5-worldtoscreen(P)[0])/(boardrect.width*0.7)
         V[1] = sqrt(ballspeed**2 - V[0]**2)
         
     changed=0
@@ -97,46 +105,36 @@ while True:
         for b in range(len(bricks[a])):
             if bricks[a][b][1]:
                 screen.blit(brick,bricks[a][b][0])                      # blit it to the screen (note: this doesnt update the screen yet)
-                #pg.draw.circle(screen,white,worldtoscreen(botright),5)
                 if ballrect.colliderect(bricks[a][b][0]):
                     bricks[a][b][1]=0
                     score += 1
-                    topleft       = np.array([brickpixel*xws*b,brickbegin-brickheight*yws*a]) # world coordinates
-                    botleft       = np.array([topleft[0],topleft[1]-brickheight*yws])
-                    topright      = np.array([topleft[0]+brickpixel*xws,topleft[1]])
-                    botright      = np.array([topleft[0]+brickpixel*xws,topleft[1]-brickheight*yws])
-                    anglebotleft  = atan2(P[1]-botleft[1],P[0]-botleft[0])
-                    anglebotright = atan2(P[1]-botright[1],P[0]-botright[0])
-                    angletopright = atan2(P[1]-topright[1],P[0]-topright[0])
-                    angletopleft  = atan2(P[1]-topleft[1],P[0]-topleft[0])
+                    anglecenter   = atan2(P[1]-yworld+bricks[a][b][0].center[1]*yws,P[0]-bricks[a][b][0].center[0]*xws)
+                    determinant   = atan(539./1544.)
                     if not changed:
-                        if  anglebotleft >= -3*pi/4. and anglebotleft < 0 and anglebotright <= -pi/4.:
+                        if  anglecenter >= -pi+determinant and anglecenter <=-determinant:
                             changed=1 # came from bot
-                            print "bot"
                             V[1] *= -1
-                        elif anglebotright >= -pi/4. and anglebotright < pi/2. and angletopright <= pi/4. and angletopright > -pi/2.:
+                        elif anglecenter >=-determinant and anglecenter <= determinant:
                             changed=1 # came from right
-                            print "right"
                             V[0] *= -1
-                        elif angletopleft <= 3*pi/4. and angletopleft >0 and angletopright >= pi/4.:
+                        elif anglecenter >= determinant and anglecenter <=pi-determinant:
                             changed=1 # came from top
-                            print "top"
                             V[1] *= -1
-                        #elif (angletopleft >= 3*pi/4. or angletopleft <= -pi/2.) and anglebotleft <= -3*pi/4.:
                         else:
                             changed=1 # came from left
-                            print "left"
                             V[0] *= -1
     
+    pg.event.pump()
     currentkeys = pg.key.get_pressed()
-    if pg.key.get_pressed()[pg.K_RIGHT] and P_board[0] <= xworld >= 0:
+    if currentkeys[pg.K_RIGHT] and P_board[0] <= xworld >= 0:
         V_board[0] = boardspeed
     elif currentkeys[pg.K_LEFT] and P_board[0] >= 0:
         V_board[0] = -boardspeed
     else:
         V_board[0] = 0
-    pg.event.pump()
-    
+    for event in pg.event.get():
+        if event.type==pg.QUIT or currentkeys[pg.K_ESCAPE]:
+            exit()
     
     if P[0] < 0. or P[0] > xworld:
         V[0] *= -1
