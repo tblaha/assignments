@@ -88,6 +88,7 @@ def marstoscreen(marscoordinates):
     xworld,yworld=worldreso
     xscreen,yscreen=screenreso
     xmarscoord,ymarscoord=marscoordinates
+    xscreencoord=int(xmarscoord/xworld*xscreen+0.5) + int(margin*xscreen+0.5)
     xscreencoord=int((margin*xworld/(1+2*margin) + xmarscoord)* xscreen/xworld + 0.5)
     yscreencoord=int(yscreen-(margin*yworld/(1+2*margin) + ymarscoord)* yscreen/yworld + 0.5)
     screencoordinates=(xscreencoord,yscreencoord)
@@ -205,8 +206,8 @@ with open('data/mars.txt','r') as atmosfile:
 
 # params:
 ts       = 0.01  # s   | time step per frame in simulation
-m_fuel   = 62.1  # kg  | initial fuel on board
-alt_fire = 1718. # m   | Altitude to fire thrusters
+m_fuel   = 70.   # kg  | initial fuel on board
+alt_fire = 1770. # m   | Altitude to fire thrusters
 alt_off  = 0.3   # m   | Thruster cut-off altitude
 v_target = -2.   # m/s | Target velocity (see getme(V,m,P))
 throttle = 0.05  # -   | factor in throttling law (see getme(V,m,P))
@@ -228,8 +229,6 @@ while condition:
     
     gamma=degrees(-(atan2(V[0],V[1])-np.pi/2))       # deg   | compute current angle from velocity vector (for user output and animation, avoided for computation)
     a=F/m                                            # m/s^2 | acceleration vector
-    print V*sqrt(np.dot(V,V))
-    break
     me = getme(V,m,P)                                # kg/s  | propellant mass flow
     m -= me*ts                                       # kg    | new total mass
     V += a*ts                                        # m/s   | new velocity vector
@@ -276,8 +275,7 @@ screenreso=(650,int(results['Py'][0]/results['Px'][-1] * 650. + 0.5))    # px | 
 #|-------------------------------------|
 #
 
-timefactor=5.                                 # -   | stretching time 
+timefactor=3.                                 # -   | stretching time 
 print "\n***Close plot window to start animation of the results with timefactor {0:0.0f}***\n".format(timefactor)
-#makeplots()
-#animate()
-
+makeplots()
+animate()

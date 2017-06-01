@@ -1,6 +1,7 @@
-import numpy as np
 from math import *
+import numpy as np
 import pygame as pg                           # Import the package only when needed, so it is not loaded when animate() is not even called
+import sys
 
 pg.init()                                     # Initialise pygame (has no visual effect)
 pg.font.init()                                # Initialise the font stuff for labels
@@ -40,6 +41,8 @@ ball_orig = pg.image.load("ball.gif")
 ball_orig = pg.transform.rotozoom(ball_orig,0,ballscale)
 P = np.array([500.,70.])
 V = np.array([0., ballspeed])
+if sys.argv[-1] == "showoff":
+    V= np.array([sqrt(ballspeed**2-3.6E2**2), 3.6E2])
 
 boardspeed = 3E2
 boardscale = 0.225
@@ -48,7 +51,7 @@ board_orig = pg.transform.rotozoom(board_orig,0,boardscale)
 P_board = np.array([500.,0.])
 V_board = np.array([0.,0.])
 
-fps=120.                                       # 1/s | will be used to limit the amount of frames drawn per second (so less CPU usage)
+fps=100.                                       # 1/s | will be used to limit the amount of frames drawn per second (so less CPU usage)
 
 rows=4
 bricks = [[],[],[],[]] # 4 rows
@@ -61,6 +64,8 @@ for a in range(rows):
             coords    = (brickpixel*xws*b,brickbegin-brickheight*yws*a)
             bricks[a].append([brickrect,1])
             bricks[a][b][0].topleft=worldtoscreen(coords)
+            if b == 8 and sys.argv[-1] == "showoff":
+                bricks[a][b][1]=0
     else:
         for b in range(perrow+1):
             brick     = pg.transform.rotozoom(brick_orig,0,brickscale)
@@ -68,6 +73,8 @@ for a in range(rows):
             coords    = (brickpixel*xws*b-brickpixel*xws/2.,brickbegin-brickheight*yws*a)
             bricks[a].append([brickrect,1])
             bricks[a][b][0].topleft=worldtoscreen(coords)
+            if b == 8 and sys.argv[-1] == "showoff":
+                bricks[a][b][1]=0
         
 score=0
 
