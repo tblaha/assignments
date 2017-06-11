@@ -1,0 +1,82 @@
+[-],[s],[m]
+
+Filename, HS1_R017_G4D0_cond3.dat
+flaretime, 28.39
+flarepos, 15.61828
+
+Filename, HS1_R027_G4D0_cond4.dat
+flaretime, 31.16
+flarepos, 35.31613
+
+Filename, HS1_R018_G4D0_cond1.dat
+flaretime, 31.02
+flarepos, 154.323
+
+Filename, HS1_R025_G4D0_cond2.dat
+flaretime, 29.16
+flarepos, 49.76203
+
+Filename, HS1_R014_G4D0_cond3.dat
+flaretime, 29.03
+flarepos, -7.457371
+
+Filename, HS1_R019_G4D0_cond2.dat
+flaretime, 30.57
+flarepos, 83.15986
+
+Filename, HS1_R020_G4D0_cond4.dat
+flaretime, 30.93
+flarepos, 96.64947
+
+Filename, HS1_R016_G4D0_cond4.dat
+flaretime, 30.49
+flarepos, 119.8858
+
+Filename, HS1_R012_G4D0_cond4.dat
+flaretime, 35.85
+flarepos, 211.8886
+
+Filename, HS1_R015_G4D0_cond1.dat
+flaretime, 30.19
+flarepos, 41.29342
+
+Filename, HS1_R021_G4D0_cond1.dat
+flaretime, 30.17
+flarepos, -5.297716
+
+Filename, HS1_R009_G4D0_cond1.dat
+flaretime, 30.83
+flarepos, 172.577
+
+Filename, HS1_R022_G4D0_cond2.dat
+flaretime, 33.87
+flarepos, 110.1183
+
+Filename, HS1_R010_G4D0_cond2.dat
+flaretime, 35.37
+flarepos, 231.0984
+
+Filename, HS1_R013_G4D0_cond2.dat
+flaretime, 31.04
+flarepos, 186.5612
+
+Filename, HS1_R023_G4D0_cond4.dat
+flaretime, 26.89
+flarepos, 3.899448
+
+Filename, HS1_R011_G4D0_cond3.dat
+flaretime, 31.24
+flarepos, 209.4391
+
+Filename, HS1_R028_G4D0_cond3.dat
+flaretime, 29.24
+flarepos, -99.96916
+
+Filename, HS1_R026_G4D0_cond1.dat
+flaretime, 30.83
+flarepos, -17.30851
+
+Filename, HS1_R024_G4D0_cond3.dat
+flaretime, 29.41
+flarepos, -52.89926
+

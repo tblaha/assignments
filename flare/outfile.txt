@@ -1,0 +1,18 @@
+[-],[s],[m]
+
+Filename, HS1_R012_G4D0_cond4.dat
+flaretime, 35.85
+flarepos, 211.8886
+
+Filename, HS1_R009_G4D0_cond1.dat
+flaretime, 30.83
+flarepos, 172.577
+
+Filename, HS1_R010_G4D0_cond2.dat
+flaretime, 35.37
+flarepos, 231.0984
+
+Filename, HS1_R011_G4D0_cond3.dat
+flaretime, 31.24
+flarepos, 209.4391
+

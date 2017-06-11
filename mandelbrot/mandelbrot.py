@@ -40,12 +40,14 @@ for a in range(int(data['npixels'])):
 
 def iterate(c, z = 0 + 0j, i = 0):
     if i > data['niter']:
-        return abs(z)
+        return z
     if not i % 10:
         print i
     zplus1=z*z + c
     i +=1
     return iterate(c, where(abs(zplus1) < data['radius']*1.01, zplus1, data['radius']) ,i)
 
-plt.imshow(abs(iterate(c)),plt.get_cmap('seismic'))
+z=(abs(iterate(c)))
+
+plt.imshow(z,plt.get_cmap('seismic'))
 plt.show()
